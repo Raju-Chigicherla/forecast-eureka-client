@@ -1,16 +1,20 @@
 package com.forecast.eureka.client.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.forecast.eureka.client.exception.CityNotFoundException;
 import com.forecast.eureka.client.service.ForecastService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +37,7 @@ public class ForecastController {
 		return new ModelAndView("index");
 	}
 
-	@GetMapping("/hello-worlds/{name}")
+	@GetMapping("/helloworld/{name}")
 	public String getHelloWorld(@PathVariable String name) {
 		LOG.info("Inside ForecastController getHelloWorld() method!!!");
 		return "Hello World " + name;
@@ -44,20 +48,20 @@ public class ForecastController {
 	 *
 	 * @param city the city
 	 * @return the response entity
+	 * @throws Exception 
 	 */
 	@Operation(summary = "This is to fetch next 3 days Weather forecast")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Details of Next 3 days Weather Forecast", content = { @Content(mediaType = "application/json") }),
 	})
 	@GetMapping(value = "/forecast", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ModelAndView weatherForecastAverage(@RequestParam(required = true, name = "city") String city) {
+	public ModelAndView weatherForecastAverage(@RequestParam(required = true, name = "city") String city) throws Exception {
 		ResponseEntity<?> forecastAvg = forecastService.weatherForecastAverage(city);
 		Object response = forecastAvg.getBody();
 		
 		ModelAndView mv = new ModelAndView("weather-data");
 		mv.addObject("weatherDetails", response);
 		return mv;
-//		return rforecastService.weatherForecastAverage(city);
 	}
 
 	/**
@@ -65,13 +69,26 @@ public class ForecastController {
 	 *
 	 * @param city the city
 	 * @return the forecast data
+	 * @throws Exception 
 	 */
 	@Operation(summary = "This is to fetch next 3 days Weather forecast")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Details of Next 3 days Weather Forecast", content = { @Content(mediaType = "application/json") }),
 	})
 	@GetMapping(value = "/getForecast", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> getForecastData(@RequestParam(required = true, name = "city") String city) {
+	public ResponseEntity<String> getForecastData(@RequestParam(required = true, name = "city") String city) throws Exception {
 		return forecastService.getForecastInfo(city);
+	}
+	
+	@ExceptionHandler(CityNotFoundException.class)
+	public ModelAndView handleEmployeeNotFoundException(HttpServletRequest request, Exception ex){
+		LOG.error("Requested URL: {}, Path: {}", request.getRequestURL(), request.getPathInfo());
+		LOG.error("Exception Raised: {}", ex);
+		
+		ModelAndView mvc = new ModelAndView("error");
+	    mvc.addObject("message", ex.getMessage());
+	    mvc.addObject("url", request.getRequestURL());
+	    
+	    return mvc;
 	}
 }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org">
+<head>
+<title>Error Page</title>
+<style>
+table.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+</head>
+<body>
+	<table class="center">
+		<tbody>
+			<tr>
+				<td th:text="${message}" />
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.forecast.eureka.client.exception.CityNotFoundException;
 import com.forecast.eureka.client.model.WeatherAverageDTO;
 import com.forecast.eureka.client.model.WeatherMapDTO;
 import com.forecast.eureka.client.model.WeatherMapTimeDTO;
@@ -43,18 +44,18 @@ public class ForecastService {
 	@Autowired
 	private RestTemplate restTemplate;
 	
-	public ResponseEntity<String> getForecastInfo(@NonNull String city) {
+	public ResponseEntity<String> getForecastInfo(@NonNull String city) throws Exception {
 		try {
 			String response = restTemplate.getForObject(completeUrl(city), String.class);
 			return new ResponseEntity<String>(response, HttpStatus.OK);
 		} catch (HttpClientErrorException ex) {
-			return new ResponseEntity<String>(ex.getResponseBodyAsString(), ex.getStatusCode());
+			throw new CityNotFoundException(ex.getResponseBodyAsString(), ex.getStatusCode().value(), true);
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+			throw new Exception(ex.getMessage()); 
 		}
 	}
 
-	public ResponseEntity<?> weatherForecastAverage(@NonNull String city) {
+	public ResponseEntity<?> weatherForecastAverage(@NonNull String city) throws Exception {
 		var result = new ArrayList<WeatherAverageDTO>();
 		try {
 			WeatherMapDTO weatherMap = restTemplate.getForObject(completeUrl(city), WeatherMapDTO.class);
@@ -67,9 +68,9 @@ public class ForecastService {
 			}
 		} catch (HttpClientErrorException ex) {
 			LOG.error("Exception occurred while processing the request. Exception: {}", ex.getMessage());
-			return new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
+			throw new CityNotFoundException(ex.getResponseBodyAsString(), ex.getStatusCode().value(), true);
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+			throw new Exception(ex.getMessage());
 		}
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
