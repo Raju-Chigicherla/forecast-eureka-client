@@ -1,7 +1,7 @@
 pipeline {
     agent none
     parameters {
-        app_name = 'rajuchigicherla/forecast-server:latest'
+        app_name = 'rajuchigicherla/forecast-client:latest'
     }
     stages {
     	stage('Maven Build') {
@@ -25,8 +25,8 @@ pipeline {
         stage('Docker Push') {
            agent any
            withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-			sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-			sh 'docker push ${env.app_name}'
+						 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+						 sh 'docker push ${env.app_name}'
           }
         }
     }
