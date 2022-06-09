@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org">
+<head>
+<style>
+table.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table, th, td {
+	border: 2px solid black;
+	border-style: solid;
+	border-collapse: collapse;
+	border-color: #96D4D4;
+}
+</style>
+</head>
+<table class="center">
+	<tbody>
+		<tr>
+			<th>Date</th>
+			<th>Daily</th>
+			<th>Nightly</th>
+			<th>Pressure</th>
+		</tr>
+		<tr th:each="weather: ${weatherDetails}">
+			<td th:text="${weather.date}" />
+			<td th:text="${weather.daily}" />
+			<td th:text="${weather.nightly}" />
+			<td th:text="${weather.pressure}" />
+		</tr>
+	</tbody>
+</table>
+</html>
