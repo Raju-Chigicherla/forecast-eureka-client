@@ -15,13 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.forecast.eureka.client.exception.CityNotFoundException;
 import com.forecast.eureka.client.model.WeatherAverageDTO;
 import com.forecast.eureka.client.model.WeatherMapDTO;
 import com.forecast.eureka.client.model.WeatherMapTimeDTO;
+import com.forecast.eureka.client.util.AppUtil;
 
 import lombok.NonNull;
 
@@ -31,7 +30,7 @@ import lombok.NonNull;
 public class ForecastService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ForecastService.class);
-
+	
 	@Value("${forecast.url:}")
 	private String FORECAST_URL;
 
@@ -46,7 +45,7 @@ public class ForecastService {
 	
 	public ResponseEntity<String> getForecastInfo(@NonNull String city) throws Exception {
 		try {
-			String response = restTemplate.getForObject(completeUrl(city), String.class);
+			String response = restTemplate.getForObject(AppUtil.completeUrl(city, FORECAST_URL, API_KEY, COUNT), String.class);
 			return new ResponseEntity<String>(response, HttpStatus.OK);
 		} catch (HttpClientErrorException ex) {
 			throw new CityNotFoundException(ex.getResponseBodyAsString(), ex.getStatusCode().value(), true);
@@ -58,12 +57,12 @@ public class ForecastService {
 	public ResponseEntity<?> weatherForecastAverage(@NonNull String city) throws Exception {
 		var result = new ArrayList<WeatherAverageDTO>();
 		try {
-			WeatherMapDTO weatherMap = restTemplate.getForObject(completeUrl(city), WeatherMapDTO.class);
+			WeatherMapDTO weatherMap = restTemplate.getForObject(AppUtil.completeUrl(city, FORECAST_URL, API_KEY, COUNT), WeatherMapDTO.class);
 			for (LocalDate reference = LocalDate.now(); reference.isBefore(LocalDate.now().plusDays(3)); reference = reference.plusDays(1)) {
 				final LocalDate ref = reference;
 				List<WeatherMapTimeDTO> collect = weatherMap.getList().stream().filter(x -> x.getDt().toLocalDate().equals(ref)).collect(Collectors.toList());
 				if (!CollectionUtils.isEmpty(collect)) {
-					result.add(this.average(collect));
+					result.add(AppUtil.average(collect));
 				}
 			}
 		} catch (HttpClientErrorException ex) {
@@ -75,21 +74,6 @@ public class ForecastService {
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
-	private WeatherAverageDTO average(List<WeatherMapTimeDTO> list) {
-		var result = new WeatherAverageDTO();
-		for (WeatherMapTimeDTO item : list) {
-			result.setDate(item.getDt().toLocalDate());
-			result.plusMap(item);
-		}
-		result.totalize();
-		return result;
-	}
-
-	private String completeUrl(String city) {
-		UriComponents uriComponents = UriComponentsBuilder.newInstance().scheme("http").host(FORECAST_URL).path("")
-				.query("q={keyword}&appid={appid}&cnt={count}&units=metric").buildAndExpand(city, API_KEY, COUNT);
-		return uriComponents.toString();
-	}
 }
 
 // @formatter:on

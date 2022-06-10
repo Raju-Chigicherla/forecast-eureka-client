@@ -45,8 +45,6 @@ public class WeatherMapTimeDTO {
 	 */
 	@JsonIgnore
 	public Boolean isDayTime() {
-//		LocalDateTime currentDateTime = LocalDateTime.now();
-//		return (this.dt.getHour() >= currentDateTime.getHour() && this.dt.getHour() < 18);
 		return (this.dt.getHour() >= 6 && this.dt.getHour() < 18);
 	}
 

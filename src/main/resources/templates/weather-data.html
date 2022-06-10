@@ -14,21 +14,38 @@ table, th, td {
 	border-collapse: collapse;
 	border-color: #96D4D4;
 }
+
+th, td {
+	padding-top: 10px;
+	padding-bottom: 20px;
+	padding-left: 30px;
+	padding-right: 40px;
+}
 </style>
 </head>
 <table class="center">
 	<tbody>
 		<tr>
-			<th>Date</th>
+			<th rowspan="2">Date</th>
+			<th colspan="3">Temperature</th>
+			<th colspan="2">Wind Speed</th>
+			<th rowspan="2">Message</th>
+		</tr>
+		<tr>
 			<th>Daily</th>
 			<th>Nightly</th>
 			<th>Pressure</th>
+			<th>Daily</th>
+			<th>Nightly</th>
 		</tr>
 		<tr th:each="weather: ${weatherDetails}">
 			<td th:text="${weather.date}" />
 			<td th:text="${weather.daily}" />
 			<td th:text="${weather.nightly}" />
 			<td th:text="${weather.pressure}" />
+			<td th:text="${weather.windDaily}" />
+			<td th:text="${weather.windNightly}" />
+			<td th:text="${weather.message}" />
 		</tr>
 	</tbody>
 </table>
