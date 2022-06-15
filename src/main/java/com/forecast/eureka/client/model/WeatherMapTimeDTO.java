@@ -1,6 +1,7 @@
 package com.forecast.eureka.client.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,6 +38,9 @@ public class WeatherMapTimeDTO {
 	/** The wind. */
 	@JsonProperty("wind")
 	private WeatherWindDTO wind;
+	
+	@JsonProperty("weather")
+	private List<WeatherDTO> weather;
 
 	/**
 	 * Checks if is day time.

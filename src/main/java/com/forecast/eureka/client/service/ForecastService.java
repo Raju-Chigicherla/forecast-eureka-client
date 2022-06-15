@@ -30,7 +30,7 @@ import lombok.NonNull;
 public class ForecastService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ForecastService.class);
-	
+
 	@Value("${forecast.url:}")
 	private String FORECAST_URL;
 
@@ -42,7 +42,7 @@ public class ForecastService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	public ResponseEntity<String> getForecastInfo(@NonNull String city) throws Exception {
 		try {
 			String response = restTemplate.getForObject(AppUtil.completeUrl(city, FORECAST_URL, API_KEY, COUNT), String.class);
@@ -50,7 +50,7 @@ public class ForecastService {
 		} catch (HttpClientErrorException ex) {
 			throw new CityNotFoundException(ex.getResponseBodyAsString(), ex.getStatusCode().value(), true);
 		} catch (Exception ex) {
-			throw new Exception(ex.getMessage()); 
+			throw new Exception(ex.getMessage());
 		}
 	}
 
@@ -73,7 +73,7 @@ public class ForecastService {
 		}
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
-	
+
 }
 
 // @formatter:on

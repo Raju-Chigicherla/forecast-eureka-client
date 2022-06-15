@@ -23,9 +23,9 @@ public class AppUtil {
 	}
 
 	/**
-	 * Average.
+	 * Average of the Weather - Temperature & Wind
 	 *
-	 * @param list the list
+	 * @param list the list of {@link WeatherMapTimeDTO}
 	 * @return the weather average DTO
 	 */
 	public static WeatherAverageDTO average(List<WeatherMapTimeDTO> list) {
