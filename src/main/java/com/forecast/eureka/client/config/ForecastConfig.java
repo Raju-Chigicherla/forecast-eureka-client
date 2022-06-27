@@ -26,7 +26,7 @@ public class ForecastConfig {
 	 * @return the {@link RestTemplate}
 	 */
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+	RestTemplate restTemplate(RestTemplateBuilder builder) {
 		LOG.info("Inside RestTemplate builder method!!!");
 		return builder.build();
 	}
@@ -37,7 +37,7 @@ public class ForecastConfig {
 	 * @return the sampler
 	 */
 	@Bean
-	public Sampler defaultSampler() {
+	Sampler defaultSampler() {
 		LOG.info("Inside Default Sampler method!!!");
 		return Sampler.ALWAYS_SAMPLE;
 	}
